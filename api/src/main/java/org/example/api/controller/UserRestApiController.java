@@ -26,6 +26,7 @@ public class UserRestApiController {
         System.out.println("invoked service");
         List<User> usersList = userService.findAll();
         if (usersList.isEmpty()) {
+            log.error("Users  not found.");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Collections.emptyList());
         }
@@ -41,6 +42,7 @@ public class UserRestApiController {
             log.info("Deleted User with Id: {}", id);
             return ResponseEntity.ok().build();
         }
+        log.error("User not found.");
         return ResponseEntity.notFound().build();
     }
 

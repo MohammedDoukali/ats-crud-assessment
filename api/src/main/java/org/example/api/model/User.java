@@ -1,6 +1,8 @@
 package org.example.api.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,10 +22,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
+    @NotNull
+    @Size(min = 3, max = 20)
     String firstName;
 
+    @NotNull
+    @Size(min = 3, max = 20)
     String lastName;
 
+    @NotNull
     String email;
 
 }
