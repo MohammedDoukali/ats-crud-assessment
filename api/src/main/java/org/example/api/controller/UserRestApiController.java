@@ -33,6 +33,18 @@ public class UserRestApiController {
         return ResponseEntity.ok(usersList);
     }
 
+    // Create User
+    @PostMapping("/")
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        try {
+            User savedUser = userService.save(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        } catch (Exception e) {
+            log.error("Error creating user", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
     // Delete User
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
@@ -45,6 +57,7 @@ public class UserRestApiController {
         log.error("User not found.");
         return ResponseEntity.notFound().build();
     }
+
 
 
 }
