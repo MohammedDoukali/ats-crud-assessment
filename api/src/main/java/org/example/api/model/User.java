@@ -1,14 +1,14 @@
 package org.example.api.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.Builder;
 
 
 @Entity
@@ -22,15 +22,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @NotNull
-    @Size(min = 3, max = 20)
+    @NotBlank(message = "First name is required")
+    @Size(min = 3, max = 20, message = "First name must be between 3 and 20 characters")
     String firstName;
 
-    @NotNull
-    @Size(min = 3, max = 20)
+    @NotBlank(message = "Last name is required")
+    @Size(min = 3, max = 20, message = "Last name must be between 3 and 20 characters")
     String lastName;
 
-    @NotNull
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    @Column(unique = true)
     String email;
 
 }
