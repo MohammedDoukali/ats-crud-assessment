@@ -90,7 +90,50 @@
     border-spacing: 0;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    overflow: hidden;
+    display: block;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.responsive-table thead,
+.responsive-table tbody {
+    display: block;
+}
+
+.responsive-table thead {
+    width: 100%;
+}
+
+.responsive-table tbody {
+    max-height: 500px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+/* Custom scrollbar for the table */
+.responsive-table tbody::-webkit-scrollbar {
+    width: 4px;
+}
+
+.responsive-table tbody::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.responsive-table tbody::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.responsive-table tbody::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.responsive-table tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    transition: background-color 0.15s ease;
 }
 
 .responsive-table th {
@@ -103,6 +146,9 @@
     text-transform: uppercase;
     letter-spacing: 0.8px;
     border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .responsive-table th:last-child {
@@ -207,6 +253,29 @@
         font-size: 13px;
     }
     
+    .responsive-table {
+        display: table;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .responsive-table thead,
+    .responsive-table tbody {
+        display: table-header-group;
+    }
+    
+    .responsive-table tbody {
+        display: table-row-group;
+        max-height: none;
+        overflow-y: visible;
+    }
+    
+    .responsive-table tr {
+        display: table-row;
+        width: auto;
+        table-layout: auto;
+    }
+    
     .responsive-table th {
         padding: 10px 12px;
         font-size: 11px;
@@ -273,8 +342,10 @@
     }
     
     .responsive-table {
-        overflow-x: auto;
         display: block;
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: auto;
         white-space: nowrap;
     }
     
@@ -374,131 +445,6 @@
         padding: 4px 6px;
         font-size: 12px;
         margin: 0 1px;
-    }
-}
-
-/* Enhanced Popup Styles */
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    animation: fadeIn 0.2s ease-out;
-}
-
-.popup-content {
-    background: white;
-    padding: 32px;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    text-align: center;
-    min-width: 320px;
-    max-width: 90vw;
-    animation: slideUp 0.3s ease-out;
-}
-
-.popup-content h3 {
-    margin: 0 0 12px 0;
-    color: #dc2626;
-    font-size: 24px;
-    font-weight: 700;
-}
-
-.popup-content p {
-    margin: 0 0 24px 0;
-    color: #64748b;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-.popup-buttons {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-}
-
-.btn-confirm {
-    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-}
-
-.btn-confirm:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
-}
-
-.btn-cancel {
-    background: #f8fafc;
-    color: #64748b;
-    border: 2px solid #e2e8f0;
-    padding: 12px 24px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 14px;
-    transition: all 0.2s ease;
-}
-
-.btn-cancel:hover {
-    background: #e2e8f0;
-    color: #475569;
-    transform: translateY(-1px);
-}
-
-.message-popup {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-    padding: 16px 24px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
-    z-index: 1001;
-    animation: slideInRight 0.3s ease-out;
-    font-weight: 500;
-    min-width: 280px;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes slideInRight {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
     }
 }
 

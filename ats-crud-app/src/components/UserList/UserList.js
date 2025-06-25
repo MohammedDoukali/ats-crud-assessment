@@ -1,26 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { SuccessModal, ConfirmModal, PageHeader, LoadingState } from '../shared';
 import './UserList.css';
 
+// Constants
+const API_BASE_URL = 'http://localhost:8080/api/user';
+
 function UserList() {
+  // Hooks
+  const navigate = useNavigate();
+
+  // State management
   const [users, setUsers] = useState([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('success');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Effects
   useEffect(() => {
     fetchUsers();
   }, []);
 
+  // API Functions
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await axios.get('http://localhost:8080/api/user/');
+      const response = await axios.get(`${API_BASE_URL}/`);
       setUsers(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -31,27 +42,41 @@ function UserList() {
     }
   };
 
-  const handleDeleteUser = async (userId) => {
+  // Modal Functions
+  const showModalMessage = (message, type = 'success') => {
+    setMessage(message);
+    setMessageType(type);
+    setShowMessage(true);
+    setTimeout(() => setShowMessage(false), 3000);
+  };
+
+  // Event Handlers
+  const handleDeleteUser = (userId) => {
     const user = users.find(u => u.id === userId);
     setUserToDelete({ id: userId, name: `${user.firstName} ${user.lastName}` });
     setShowDeleteConfirm(true);
   };
 
+  const handleEditUser = (userId) => {
+    navigate(`/edit-user/${userId}`);
+  };
+
+  const handleRetry = () => {
+    fetchUsers();
+  };
+
+  // Delete Functions
   const confirmDelete = async () => {
     try {
-      const response = await axios.delete(`http://localhost:8080/api/user/${userToDelete.id}`);
+      const response = await axios.delete(`${API_BASE_URL}/${userToDelete.id}`);
       
       if (response.status === 200) {
-        setMessage('User deleted successfully!');
-        setShowMessage(true);
+        showModalMessage('User deleted successfully!', 'success');
         fetchUsers(); // Refresh the user list
-        setTimeout(() => setShowMessage(false), 3000);
       }
     } catch (error) {
       console.error('Error deleting user:', error);
-      setMessage('Failed to delete user. Please try again.');
-      setShowMessage(true);
-      setTimeout(() => setShowMessage(false), 3000);
+      showModalMessage('Failed to delete user. Please try again.', 'error');
     }
     setShowDeleteConfirm(false);
     setUserToDelete(null);
@@ -62,38 +87,60 @@ function UserList() {
     setUserToDelete(null);
   };
 
-  const handleRetry = () => {
-    fetchUsers();
-  };
+  // Render Helper Components
+  const renderTableHeader = () => (
+    <div className="table-header">
+      <div className="table-info">
+        <h2>Users</h2>
+        <p>A comprehensive list of all users in the system</p>
+      </div>
+      <button className="add-button">
+        <Link to="/add-user">+ Add User</Link>
+      </button>
+    </div>
+  );
 
-  // Loading state
+  const renderUserRow = (user, index) => (
+    <tr key={user.id}>
+      <td data-label="Index">{index + 1}</td>
+      <td data-label="FirstName">{user.firstName}</td>
+      <td data-label="LastName">{user.lastName}</td>
+      <td data-label="Email">{user.email}</td>
+      <td data-label="Actions">
+        <button 
+          className="edit-button"
+          onClick={() => handleEditUser(user.id)}
+        >
+          <i className="fas fa-edit"></i>
+        </button>
+        <button 
+          className="delete-button"
+          onClick={() => handleDeleteUser(user.id)}
+        >
+          <i className="fas fa-trash-alt"></i>
+        </button>
+      </td>
+    </tr>
+  );
+
+  // Early returns for different states
   if (isLoading) {
     return (
-      <div className="container">
-        <header className="header">
-          <h1>User Management</h1>
-          <p>Manage and organize user accounts</p>
-        </header>
-        
-        <div className="table-container">
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Loading users...</p>
-          </div>
-        </div>
-      </div>
+      <LoadingState
+        title="User Management"
+        subtitle="Manage and organize user accounts"
+        message="Loading users..."
+      />
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="container">
-        <header className="header">
-          <h1>User Management</h1>
-          <p>Manage and organize user accounts</p>
-        </header>
-        
+        <PageHeader 
+          title="User Management"
+          subtitle="Manage and organize user accounts"
+        />
         <div className="table-container">
           <div className="error-container">
             <div className="error-icon">⚠️</div>
@@ -111,15 +158,13 @@ function UserList() {
     );
   }
 
-  // Empty state
   if (users.length === 0) {
     return (
       <div className="container">
-        <header className="header">
-          <h1>User Management</h1>
-          <p>Manage and organize user accounts</p>
-        </header>
-        
+        <PageHeader 
+          title="User Management"
+          subtitle="Manage and organize user accounts"
+        />
         <div className="table-container">
           <div className="empty-container">
             <div className="empty-icon">👥</div>
@@ -134,23 +179,17 @@ function UserList() {
     );
   }
 
+  // Main render
   return (
     <div className="container">
-      <header className="header">
-        <h1>User Management</h1>
-        <p>Manage and organize user accounts</p>
-      </header>
+      <PageHeader 
+        title="User Management"
+        subtitle="Manage and organize user accounts"
+      />
       
       <div className="table-container">
-        <div className="table-header">
-          <div className="table-info">
-            <h2>Users</h2>
-            <p>A comprehensive list of all users in the system</p>
-          </div>
-          <button className="add-button">
-            <Link to="/add-user">+ Add User</Link>
-          </button>
-        </div>
+        {renderTableHeader()}
+        
         <table className="responsive-table">
           <thead>
             <tr>
@@ -162,49 +201,28 @@ function UserList() {
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
-              <tr key={user.id}>
-                <td data-label="Index">{index + 1}</td>
-                <td data-label="FirstName">{user.firstName}</td>
-                <td data-label="LastName">{user.lastName}</td>
-                <td data-label="Email">{user.email}</td>
-                <td data-label="Actions">
-                  <button className="edit-button">
-                    <i className="fas fa-edit"></i>
-                  </button>
-                  <button 
-                    className="delete-button"
-                    onClick={() => handleDeleteUser(user.id)}
-                  >
-                    <i className="fas fa-trash-alt"></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {users.map((user, index) => renderUserRow(user, index))}
           </tbody>
         </table>
       </div>
 
-      {/* Delete Confirmation Popup */}
-      {showDeleteConfirm && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <h3>Confirm Delete</h3>
-            <p>Are you sure you want to delete <strong>{userToDelete?.name}</strong>?</p>
-            <div className="popup-buttons">
-              <button onClick={confirmDelete} className="btn-confirm">Yes, Delete</button>
-              <button onClick={cancelDelete} className="btn-cancel">Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmModal
+        show={showDeleteConfirm}
+        title="Confirm Delete"
+        message={`Are you sure you want to delete ${userToDelete?.name}?`}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
 
-      {/* Success/Error Message Toast */}
-      {showMessage && (
-        <div className="message-popup">
-          <p>{message}</p>
-        </div>
-      )}
+      <SuccessModal
+        show={showMessage}
+        type={messageType}
+        message={message}
+        onClose={() => setShowMessage(false)}
+      />
     </div>
   );
 }
