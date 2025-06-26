@@ -14,6 +14,9 @@ Full-stack User Management application with Java Spring Boot backend and React.j
 # Start all services
 make up
 
+# Down all services
+make down
+
 # Stop services
 make stop
 
