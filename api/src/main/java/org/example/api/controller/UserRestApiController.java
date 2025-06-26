@@ -38,13 +38,8 @@ public class UserRestApiController {
     // Create User
     @PostMapping("/")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        try {
-            User savedUser = userService.save(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
-        } catch (Exception e) {
-            log.error("Error creating user", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        User savedUser = userService.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
     
     // Delete User
@@ -80,20 +75,15 @@ public class UserRestApiController {
     // Update User
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable String id, @Valid @RequestBody User user) {
-        try {
-            Optional<User> existingUser = userService.findById(id);
-            if (existingUser.isPresent()) {
-                user.setId(id); // Ensure the ID is set correctly
-                User updatedUser = userService.save(user);
-                log.info("Updated User with ID: {}", id);
-                return ResponseEntity.ok(updatedUser);
-            } else {
-                log.error("User with ID {} not found for update", id);
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            log.error("Error updating user with ID {}", id, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        Optional<User> existingUser = userService.findById(id);
+        if (existingUser.isPresent()) {
+            user.setId(id); // Ensure the ID is set correctly
+            User updatedUser = userService.save(user);
+            log.info("Updated User with ID: {}", id);
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            log.error("User with ID {} not found for update", id);
+            return ResponseEntity.notFound().build();
         }
     }
 }

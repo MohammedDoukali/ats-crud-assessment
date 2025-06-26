@@ -1,6 +1,7 @@
 package org.example.api.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -28,6 +29,23 @@ public class GlobalExceptionHandler {
         
         log.error("Validation error: {}", errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        Map<String, String> error = new HashMap<>();
+        
+        String message = ex.getMessage();
+        if (message != null && message.contains("email")) {
+            error.put("error", "Duplicate email");
+            error.put("message", "A user with this email address already exists. Please use a different email address.");
+        } else {
+            error.put("error", "Data integrity violation");
+            error.put("message", "The data violates database constraints. Please check your input and try again.");
+        }
+        
+        log.error("Data integrity violation: ", ex);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler(RuntimeException.class)

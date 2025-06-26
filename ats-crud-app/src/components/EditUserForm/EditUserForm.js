@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LuUserRound } from "react-icons/lu";
 import { FormField, SuccessModal, PageHeader, LoadingState } from '../shared';
+import { handleApiError, handleNetworkError } from '../../utils/apiErrorHandler';
 import '../AddUserForm/AddUserForm.css';
 
 // Constants
@@ -53,11 +54,12 @@ function EditUserForm() {
         setUserNotFound(true);
         showModalMessage('User not found', 'error');
       } else {
-        showModalMessage('Failed to load user data', 'error');
+        const errorMessage = await handleApiError(response, 'Failed to load user data');
+        showModalMessage(errorMessage, 'error');
       }
     } catch (error) {
-      console.error('Error fetching user:', error);
-      showModalMessage('Network error. Please check your connection.', 'error');
+      const errorMessage = handleNetworkError(error);
+      showModalMessage(errorMessage, 'error');
     } finally {
       setIsLoadingUser(false);
     }
@@ -131,12 +133,12 @@ function EditUserForm() {
       if (response.ok) {
         showModalMessage('User updated successfully!', 'success');
       } else {
-        const errorData = await response.json();
-        showModalMessage(errorData.message || 'Failed to update user. Please try again.', 'error');
+        const errorMessage = await handleApiError(response, 'Failed to update user. Please try again.');
+        showModalMessage(errorMessage, 'error');
       }
     } catch (error) {
-      console.error('Error updating user:', error);
-      showModalMessage('Network error. Please check your connection and try again.', 'error');
+      const errorMessage = handleNetworkError(error);
+      showModalMessage(errorMessage, 'error');
     } finally {
       setIsLoading(false);
     }

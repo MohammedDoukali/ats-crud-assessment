@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LuUserRound } from "react-icons/lu";
 import { FormField, SuccessModal, PageHeader } from '../shared';
+import { handleApiError, handleNetworkError } from '../../utils/apiErrorHandler';
 import './AddUserForm.css';
 
 // Constants
@@ -96,12 +97,12 @@ function AddUserForm() {
         showModalMessage('User created successfully!', 'success');
         setFormData(INITIAL_FORM_DATA); // Reset form
       } else {
-        const errorData = await response.json();
-        showModalMessage(errorData.message || 'Failed to create user. Please try again.', 'error');
+        const errorMessage = await handleApiError(response, 'Failed to create user. Please try again.');
+        showModalMessage(errorMessage, 'error');
       }
     } catch (error) {
-      console.error('Error creating user:', error);
-      showModalMessage('Network error. Please check your connection and try again.', 'error');
+      const errorMessage = handleNetworkError(error);
+      showModalMessage(errorMessage, 'error');
     } finally {
       setIsLoading(false);
     }
