@@ -19,9 +19,9 @@ clean:
 	docker rmi ats-crud-assessment-api ats-crud-assessment-frontend 2>/dev/null || true
 
 clean-all:
-	docker compose down -v --rmi all --remove-orphans
-	docker system prune -f
-
+	docker compose down -v
+	docker rmi ats-crud-assessment-api ats-crud-assessment-frontend 2>/dev/null || true
+	
 db-reset:
 	docker compose down
 	docker volume rm ats-crud-assessment_mysql_data 2>/dev/null || true
