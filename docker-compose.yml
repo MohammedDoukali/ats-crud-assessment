@@ -1,0 +1,52 @@
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: ats-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: ats_crud_db
+      MYSQL_USER: ats_user
+      MYSQL_PASSWORD: ats_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./api/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - ats-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Spring Boot API
+  api:
+    build: ./api
+    container_name: ats-api
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ats-network
+
+  # React Frontend
+  frontend:
+    build: ./ats-crud-app
+    container_name: ats-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - ats-network
+
+volumes:
+  mysql_data:
+
+networks:
+  ats-network:
